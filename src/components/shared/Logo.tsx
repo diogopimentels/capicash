@@ -5,9 +5,10 @@ interface LogoProps {
     className?: string
     size?: "small" | "default" | "large"
     showText?: boolean
+    textClassName?: string
 }
 
-export function Logo({ className, size = "default", showText = true }: LogoProps) {
+export function Logo({ className, size = "default", showText = true, textClassName }: LogoProps) {
     const { theme } = useTheme()
 
     // Mapeamento de Tamanhos
@@ -33,7 +34,8 @@ export function Logo({ className, size = "default", showText = true }: LogoProps
             {showText && (
                 <span className={cn(
                     "font-bold tracking-tight text-zinc-900 dark:text-zinc-50 font-sans",
-                    textSize
+                    textSize,
+                    textClassName
                 )}>
                     Capicash
                 </span>

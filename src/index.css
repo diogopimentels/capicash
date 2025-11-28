@@ -63,13 +63,21 @@
   /* Force transparency for Aurora Background visibility on Mobile */
   html,
   body,
-  #root {
+  #root,
+  main {
     @apply h-full w-full;
     background-color: transparent !important;
   }
 
   /* Fix for Vaul/Shadcn Drawer overlay */
-  [data-vaul-drawer] {
+  [data-vaul-drawer-wrapper],
+  [data-vaul-overlay]+div {
     background-color: transparent !important;
+  }
+
+  /* Glassmorphism Global para Cards */
+  .card,
+  [data-state="open"] .dialog-content {
+    @apply bg-white/60 dark:bg-zinc-900/60 backdrop-blur-md border-white/20 dark:border-white/10 shadow-xl;
   }
 }

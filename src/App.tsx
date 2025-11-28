@@ -9,9 +9,12 @@ import { Finance } from '@/pages/finance/Finance'
 import SettingsPage from '@/pages/settings'
 import { Checkout } from '@/pages/public/Checkout'
 
+import { AuroraBackground } from '@/components/ui/aurora-background'
+
 export default function App() {
   return (
     <BrowserRouter>
+      <AuroraBackground />
       <Routes>
         {/* Public Routes */}
         <Route path="/p/:linkId" element={<Checkout />} />
