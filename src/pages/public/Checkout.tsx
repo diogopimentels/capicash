@@ -86,7 +86,7 @@ export function Checkout() {
         return (
             <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
                 <div className="mb-8">
-                    <Logo className="w-8 h-8" textClassName="text-xl" />
+                    <Logo className="w-8 h-8" />
                 </div>
                 <Card className="w-full max-w-md shadow-xl border-none overflow-hidden">
                     <div className="h-48 bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
@@ -111,7 +111,7 @@ export function Checkout() {
                         </Button>
                     </CardFooter>
                 </Card>
-                <p className="mt-8 text-xs text-slate-400">Powered by Libera.ai</p>
+                <p className="mt-8 text-xs text-slate-400">Powered by Capicash</p>
             </div>
         )
     }

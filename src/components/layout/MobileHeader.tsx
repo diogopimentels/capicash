@@ -11,7 +11,7 @@ export function MobileHeader() {
         <header className="flex h-16 items-center justify-between px-4 border-b border-white/5 bg-white/5 backdrop-blur-md sticky top-0 z-50 md:hidden">
             {/* Lado Esquerdo: Logo */}
             <div onClick={() => navigate('/')} className="cursor-pointer">
-                <Logo />
+                <Logo size="small" showText={true} />
             </div>
 
             {/* Lado Direito: Ações */}

@@ -37,7 +37,7 @@ export function AuthLayout() {
 
             <div className="w-full max-w-md space-y-8 relative z-10">
                 <div className="flex justify-center mb-8">
-                    <Logo className="w-12 h-12" textClassName="text-3xl text-white" />
+                    <Logo size="large" showText={true} />
                 </div>
 
                 <motion.div

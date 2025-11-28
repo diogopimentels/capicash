@@ -62,7 +62,7 @@ export function CreateLink({ children }: CreateLinkProps) {
             price: priceValue,
             sales: 0,
             revenue: 0,
-            link: `libera.ai/${title.toLowerCase().replace(/\s+/g, '-')}`,
+            link: `capicash.com/${title.toLowerCase().replace(/\s+/g, '-')}`,
             createdAt: new Date().toISOString()
         }
 

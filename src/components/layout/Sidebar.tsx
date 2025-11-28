@@ -45,7 +45,7 @@ export function Sidebar() {
                 {/* Header */}
                 <div className={cn("p-6 flex items-center relative", isCollapsed ? "justify-center" : "justify-between")}>
                     <div className={cn("transition-all duration-300", isCollapsed && "scale-90")}>
-                        <Logo collapsed={isCollapsed} />
+                        <Logo showText={!isCollapsed} />
                     </div>
 
                     <Button
@@ -105,7 +105,7 @@ export function Sidebar() {
                                     Admin User
                                 </p>
                                 <p className="text-xs text-muted-foreground truncate">
-                                    admin@libera.ai
+                                    admin@capicash.com
                                 </p>
                             </div>
                         )}

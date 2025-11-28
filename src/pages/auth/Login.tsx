@@ -9,7 +9,7 @@ import { Loader2, Mail, Lock, ArrowRight } from "lucide-react"
 export function Login() {
     const login = useAppStore((state) => state.login)
     const [isLoading, setIsLoading] = useState(false)
-    const [email, setEmail] = useState("demo@libera.ai")
+    const [email, setEmail] = useState("demo@capicash.com")
     const [password, setPassword] = useState("password")
 
     const handleSubmit = async (e: React.FormEvent) => {

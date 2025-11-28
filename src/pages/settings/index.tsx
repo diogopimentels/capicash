@@ -11,7 +11,7 @@ export default function SettingsPage() {
     // Mock Data
     const user = {
         name: "Admin User",
-        email: "admin@libera.ai", // READ ONLY
+        email: "admin@capicash.com", // READ ONLY
         avatar: "https://github.com/shadcn.png"
     }
 
