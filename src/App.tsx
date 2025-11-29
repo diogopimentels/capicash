@@ -7,7 +7,8 @@ import { Dashboard } from '@/pages/dashboard/Dashboard'
 import { Products } from '@/pages/products/Products'
 import { Finance } from '@/pages/finance/Finance'
 import SettingsPage from '@/pages/settings'
-import { Checkout } from '@/pages/public/Checkout'
+import { CheckoutPage } from '@/pages/public/CheckoutPage'
+import NotFoundPage from '@/pages/public/NotFoundPage'
 
 import { AuroraBackground } from '@/components/ui/aurora-background'
 
@@ -16,9 +17,6 @@ export default function App() {
     <BrowserRouter>
       <AuroraBackground />
       <Routes>
-        {/* Public Routes */}
-        <Route path="/p/:linkId" element={<Checkout />} />
-
         {/* Auth Routes */}
         <Route path="/auth" element={<AuthLayout />}>
           <Route path="login" element={<Login />} />
@@ -35,6 +33,16 @@ export default function App() {
           <Route path="settings" element={<SettingsPage />} />
           <Route path="settings/profile" element={<SettingsPage />} />
         </Route>
+
+        {/* Public Checkout Routes */}
+        {/* Option A: Root wildcard (catch-all for slugs) */}
+        <Route path="/:slug" element={<CheckoutPage />} />
+
+        {/* Option B: Explicit prefix (safer) */}
+        <Route path="/p/:slug" element={<CheckoutPage />} />
+
+        {/* 404 Fallback - MUST be last */}
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
   )

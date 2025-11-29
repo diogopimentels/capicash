@@ -57,7 +57,8 @@
   }
 
   body {
-    @apply bg-transparent text-foreground transition-colors duration-300;
+    @apply bg-transparent text-foreground transition-colors duration-300 antialiased;
+    text-rendering: optimizeLegibility;
   }
 
   /* Force transparency for Aurora Background visibility on Mobile */

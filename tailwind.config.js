@@ -51,13 +51,22 @@ export default {
                 sans: ['Inter', 'sans-serif'],
             },
             animation: {
-                blob: "blob 20s infinite",
+                blob: "blob 20s infinite ease-in-out",
             },
             keyframes: {
                 blob: {
-                    "0%, 100%": { transform: "translate(0px, 0px) scale(1)" },
-                    "33%": { transform: "translate(30px, -50px) scale(1.2)" },
-                    "66%": { transform: "translate(-20px, 20px) scale(0.8)" }
+                    "0%": {
+                        transform: "translate3d(0, 0, 0) scale(1)", // Use 3D para ativar GPU
+                    },
+                    "33%": {
+                        transform: "translate3d(30px, -50px, 0) scale(1.1)",
+                    },
+                    "66%": {
+                        transform: "translate3d(-20px, 20px, 0) scale(0.9)",
+                    },
+                    "100%": {
+                        transform: "translate3d(0, 0, 0) scale(1)",
+                    },
                 }
             }
         }

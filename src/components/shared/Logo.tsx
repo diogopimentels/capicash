@@ -6,10 +6,15 @@ interface LogoProps {
     size?: "small" | "default" | "large"
     showText?: boolean
     textClassName?: string
+    forceTheme?: "light" | "dark"
 }
 
-export function Logo({ className, size = "default", showText = true, textClassName }: LogoProps) {
-    const { theme } = useTheme()
+export function Logo({ className, size = "default", showText = true, textClassName, forceTheme }: LogoProps) {
+    const { theme: globalTheme } = useTheme()
+
+    // Se forceTheme existir, usa ele. Se não, usa o tema global.
+    // Fallback: se global for 'system', assume 'light' para simplificar ou mantenha lógica anterior.
+    const activeTheme = forceTheme || (globalTheme === 'system' ? 'light' : globalTheme)
 
     // Mapeamento de Tamanhos
     const dimensions = {
@@ -19,7 +24,13 @@ export function Logo({ className, size = "default", showText = true, textClassNa
     }
 
     const { img: imgSize, text: textSize } = dimensions[size]
-    const logoSrc = theme === 'light' ? "/logo/white.png" : "/logo/black.png"
+
+    // Se o tema ativo for light (fundo claro), usamos a logo 'white.png' (que contem a arte escura/colorida)
+    // Se o tema ativo for dark (fundo escuro), usamos a logo 'black.png' (que contem a arte clara)
+    const logoSrc = activeTheme === 'light' ? "/logo/white.png" : "/logo/black.png"
+
+    // Cor do texto baseada no tema ativo
+    const textColor = activeTheme === 'light' ? "text-zinc-900" : "text-zinc-50"
 
     return (
         <div className={cn("flex items-center gap-3", className)}>
@@ -33,8 +44,9 @@ export function Logo({ className, size = "default", showText = true, textClassNa
             {/* 2. O Texto (Capicash) - Renderizado Condicionalmente */}
             {showText && (
                 <span className={cn(
-                    "font-bold tracking-tight text-zinc-900 dark:text-zinc-50 font-sans",
+                    "font-bold tracking-tight font-sans",
                     textSize,
+                    textColor,
                     textClassName
                 )}>
                     Capicash
