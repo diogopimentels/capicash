@@ -6,6 +6,7 @@ import { useAuth } from "@clerk/clerk-react"
 import { useQuery } from "@tanstack/react-query"
 import { api, setupAPIClient } from "@/lib/api"
 import { useEffect } from "react"
+import { CapicashLoader } from "@/components/shared/CapicashLoader"
 
 export function Dashboard() {
     const { getToken, isLoaded } = useAuth()
@@ -36,7 +37,7 @@ export function Dashboard() {
     }
 
     if (isLoading) {
-        return <div className="p-8">Carregando dados...</div>
+        return <div className="flex h-[50vh] items-center justify-center"><CapicashLoader /></div>
     }
 
     // Dados reais ou Zero (se falhar/novo)

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 import { useQuery } from "@tanstack/react-query"
 import { getProducts } from "@/lib/api"
+import { CapicashLoader } from "@/components/shared/CapicashLoader"
 
 export function Products() {
     const { data: products, isLoading } = useQuery({
@@ -31,7 +32,7 @@ export function Products() {
             </div>
 
             {isLoading ? (
-                <div className="p-8 text-center">Carregando produtos...</div>
+                <div className="p-8 flex justify-center"><CapicashLoader /></div>
             ) : (
                 <ProductList products={products || []} />
             )}

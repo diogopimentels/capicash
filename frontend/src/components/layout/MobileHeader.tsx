@@ -1,57 +1,45 @@
-import { Settings, LogOut } from "lucide-react"
+import { Bell } from "lucide-react"
 import { useNavigate } from "react-router-dom"
-import { ThemeToggle } from "@/components/ui/theme-toggle"
-import { Button } from "@/components/ui/button"
 import { Logo } from "@/components/shared/Logo"
-import { useAppStore } from "@/store/useAppStore"
-
-import { useClerk } from "@clerk/clerk-react"
+import { useUser } from "@clerk/clerk-react"
 
 export function MobileHeader() {
     const navigate = useNavigate()
-    const { signOut } = useClerk()
-    const logout = useAppStore((state) => state.logout)
-
-    const handleLogout = async () => {
-        await signOut()
-        logout()
-        navigate('/auth/login')
-    }
+    const { user } = useUser()
 
     return (
-        <header className="flex h-16 items-center justify-between px-4 border-b border-white/5 bg-white/5 backdrop-blur-md sticky top-0 z-50 md:hidden">
-            {/* Lado Esquerdo: Logo */}
-            <div onClick={() => navigate('/')} className="cursor-pointer">
+        <header className="sticky top-0 z-50 flex h-16 w-full items-center justify-between border-b border-white/5 bg-black/60 backdrop-blur-xl px-6 md:hidden">
+            {/* Left: Identity */}
+            <div
+                onClick={() => navigate('/')}
+                className="cursor-pointer drop-shadow-[0_0_15px_rgba(16,185,129,0.3)] filter"
+            >
                 <Logo size="small" showText={true} />
             </div>
 
-            {/* Lado Direito: Ações */}
-            <div className="flex items-center gap-1">
-                {/* Settings */}
-                <Button
-                    variant="ghost"
-                    size="icon"
+            {/* Right: Actions */}
+            <div className="flex items-center gap-4">
+                {/* Notification Bell */}
+                <button className="relative flex h-11 w-11 items-center justify-center rounded-full active:scale-95 transition-transform">
+                    <Bell className="h-6 w-6 text-zinc-400" />
+                    <span className="absolute top-2.5 right-2.5 h-2 w-2 rounded-full bg-red-500 ring-2 ring-black" />
+                </button>
+
+                {/* User Avatar */}
+                <button
                     onClick={() => navigate('/settings')}
-                    className="text-zinc-500 dark:text-zinc-400"
+                    className="relative h-8 w-8 overflow-hidden rounded-full ring-2 ring-white/10 active:scale-95 transition-transform"
                 >
-                    <Settings className="h-5 w-5" />
-                </Button>
-
-                {/* Logout (NOVO) */}
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={handleLogout}
-                    className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
-                >
-                    <LogOut className="h-5 w-5" />
-                </Button>
-
-                {/* Separador visual opcional ou apenas o Theme Toggle */}
-                <div className="w-px h-6 bg-zinc-200 dark:bg-zinc-800 mx-1" />
-
-                {/* Toggle de Tema */}
-                <ThemeToggle />
+                    {user?.imageUrl ? (
+                        <img
+                            src={user.imageUrl}
+                            alt="User"
+                            className="h-full w-full object-cover"
+                        />
+                    ) : (
+                        <div className="h-full w-full bg-emerald-500" />
+                    )}
+                </button>
             </div>
         </header>
     )

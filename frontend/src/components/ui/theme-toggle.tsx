@@ -1,19 +1,28 @@
 import { Moon, Sun } from "lucide-react"
-import { useTheme } from "@/components/theme-provider"
 import { Button } from "@/components/ui/button"
+import { toast } from "sonner"
 
 export function ThemeToggle() {
-    const { setTheme, theme } = useTheme()
+    const handleToggle = () => {
+        toast("Em breve!", {
+            description: "O Modo Claro está sendo polido para uma experiência visual incrível.",
+            action: {
+                label: "Entendi",
+                onClick: () => console.log("Undo"),
+            },
+        })
+    }
 
     return (
         <Button
             variant="ghost"
             size="icon"
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="rounded-full w-10 h-10 bg-zinc-100 dark:bg-zinc-800"
+            onClick={handleToggle}
+            className="rounded-full w-10 h-10 bg-zinc-100 dark:bg-zinc-800 relative overflow-hidden"
         >
-            <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 text-zinc-900" />
-            <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 text-white" />
+            {/* Show only Moon (Dark Mode active) or a generic theme icon */}
+            <Sun className="h-[1.2rem] w-[1.2rem] text-zinc-400 absolute opacity-0 scale-0" />
+            <Moon className="h-[1.2rem] w-[1.2rem] text-white transition-all scale-100 rotate-0" />
             <span className="sr-only">Alternar tema</span>
         </Button>
     )

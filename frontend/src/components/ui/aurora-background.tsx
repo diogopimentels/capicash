@@ -8,32 +8,36 @@ function AuroraBackgroundComponent({ className, ...props }: AuroraBackgroundProp
         <div
             className={cn(
                 "pointer-events-none fixed inset-0 -z-[9999] overflow-hidden",
-                "bg-slate-50 dark:bg-zinc-950",
-                // Otimização: will-change avisa o browser para preparar a GPU
+                "bg-zinc-50 dark:bg-black transition-colors duration-500",
                 "will-change-transform",
                 className
             )}
             {...props}
         >
+            {/* Optimization: Removed mix-blend-mode and reduced blur radius */}
+
+            {/* Orb 1 */}
             <div className={cn(
-                "absolute top-[20%] left-[10%] w-[40vw] h-[40vw] rounded-full mix-blend-multiply filter blur-[80px] opacity-40 animate-blob",
-                "bg-emerald-300 dark:bg-emerald-500/20",
-                // Otimização: backface-visibility previne flickering
+                "absolute -top-[10%] -left-[10%] w-[70vw] h-[70vw] rounded-full filter blur-[80px] animate-blob opacity-40 dark:opacity-20",
+                "bg-emerald-200 dark:bg-emerald-900",
                 "backface-hidden transform-gpu translate-z-0"
             )} />
+
+            {/* Orb 2 */}
             <div className={cn(
-                "absolute top-[30%] right-[10%] w-[40vw] h-[40vw] rounded-full mix-blend-multiply filter blur-[80px] opacity-40 animate-blob animation-delay-2000",
-                "bg-blue-300 dark:bg-purple-500/20",
+                "absolute top-[10%] right-[0%] w-[60vw] h-[60vw] rounded-full filter blur-[80px] animate-blob animation-delay-4000 opacity-40 dark:opacity-20",
+                "bg-blue-200 dark:bg-blue-900",
                 "backface-hidden transform-gpu translate-z-0"
             )} />
+
+            {/* Orb 3 - Reduced size */}
             <div className={cn(
-                "absolute bottom-[10%] left-[30%] w-[50vw] h-[50vw] rounded-full mix-blend-multiply filter blur-[80px] opacity-40 animate-blob animation-delay-4000",
-                "bg-teal-300 dark:bg-teal-500/20",
+                "absolute -bottom-[10%] left-[20%] w-[60vw] h-[60vw] rounded-full filter blur-[80px] animate-blob animation-delay-2000 opacity-40 dark:opacity-15",
+                "bg-teal-200 dark:bg-teal-900",
                 "backface-hidden transform-gpu translate-z-0"
             )} />
         </div>
     )
 }
 
-// O segredo: React.memo garante que este componente SÓ RENDERIZA UMA VEZ
 export const AuroraBackground = React.memo(AuroraBackgroundComponent)

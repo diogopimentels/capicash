@@ -175,7 +175,10 @@ export function CheckoutPage() {
 
             {/* --- DESKTOP LAYOUT (Split Layout) --- */}
             <div className="hidden md:flex items-center justify-center min-h-screen p-8 relative z-10">
-                <div className="w-full max-w-5xl bg-white/60 dark:bg-zinc-900/60 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-white/20 grid grid-cols-2">
+                {/* Spotlight Effect */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-emerald-500/20 blur-[120px] rounded-full pointer-events-none" />
+
+                <div className="w-full max-w-5xl bg-white/[0.03] backdrop-blur-3xl rounded-[2.5rem] shadow-[0_0_50px_-10px_rgba(0,0,0,0.5)] overflow-hidden border border-white/[0.08] grid grid-cols-2 relative z-20">
 
                     {/* COLUNA 1: PRODUTO (Visual) */}
                     <div className="p-12 bg-zinc-50/50 dark:bg-black/20 flex flex-col justify-between">

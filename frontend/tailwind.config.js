@@ -56,13 +56,13 @@ export default {
             keyframes: {
                 blob: {
                     "0%": {
-                        transform: "translate3d(0, 0, 0) scale(1)", // Use 3D para ativar GPU
+                        transform: "translate3d(0, 0, 0) scale(1)",
                     },
                     "33%": {
-                        transform: "translate3d(30px, -50px, 0) scale(1.1)",
+                        transform: "translate3d(20px, -30px, 0) scale(1.05)", // Reduced movement/scale
                     },
                     "66%": {
-                        transform: "translate3d(-20px, 20px, 0) scale(0.9)",
+                        transform: "translate3d(-15px, 15px, 0) scale(0.95)",
                     },
                     "100%": {
                         transform: "translate3d(0, 0, 0) scale(1)",

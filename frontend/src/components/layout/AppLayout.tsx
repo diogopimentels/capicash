@@ -7,6 +7,7 @@ import { MobileHeader } from './MobileHeader'
 import { useAuth, useUser } from '@clerk/clerk-react'
 import { useEffect } from 'react'
 import { setupAPIClient } from '@/lib/api'
+import { CapicashLoader } from '@/components/shared/CapicashLoader'
 
 export function AppLayout() {
     const { isLoaded: isAuthLoaded, isSignedIn, getToken } = useAuth()
@@ -38,11 +39,6 @@ export function AppLayout() {
                     })
                 } catch (error) {
                     console.error("Failed to sync user", error)
-                    // Aviso visual se a sincronização falhar, pois isso impede criação de links
-                    // toast.error("Erro ao sincronizar conta. Tente recarregar a página.", {
-                    //     description: "Se o erro persistir, faça login novamente."
-                    // })
-                    // Vamos tentar forçar o reload se falhar muito
                 }
             }
             syncUser()
@@ -50,7 +46,7 @@ export function AppLayout() {
     }, [isLoaded, isSignedIn, getToken, user])
 
     if (!isLoaded) {
-        return <div className="flex h-screen items-center justify-center">Carregando...</div>
+        return <div className="flex h-screen items-center justify-center bg-zinc-950"><CapicashLoader /></div>
     }
 
     if (!isSignedIn) {
@@ -64,11 +60,13 @@ export function AppLayout() {
                 {/* Global Aurora Background is in App.tsx */}
 
 
-                {/* Desktop Sidebar */}
+                {/* Desktop Sidebar (Floating Dock) */}
                 <Sidebar />
 
                 {/* Main Content Area */}
-                <main className="flex-1 md:ml-64 min-h-screen pb-24 md:pb-8 transition-all duration-300 relative z-10 bg-transparent">
+                {/* Updated Margin Left for Floating Sidebar: 260px width + 16px left + 24px gap = ~300px */}
+                {/* Added overflow-y-auto to handle scroll inside main area if needed, or stick to window scroll */}
+                <main className="flex-1 md:ml-[300px] min-h-screen pb-24 md:pb-8 transition-all duration-300 relative z-10 bg-transparent">
                     {/* Mobile Header */}
                     <MobileHeader />
 

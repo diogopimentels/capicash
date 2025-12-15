@@ -6,12 +6,13 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { User, Lock } from "lucide-react"
+import { CapicashLoader } from "@/components/shared/CapicashLoader"
 
 export default function SettingsPage() {
     const { user } = useUser()
 
     if (!user) {
-        return <div>Carregando...</div>
+        return <div className="flex h-[50vh] items-center justify-center"><CapicashLoader /></div>
     }
 
     return (

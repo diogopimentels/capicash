@@ -6,6 +6,9 @@ import { Register } from '@/pages/auth/Register'
 import { Dashboard } from '@/pages/dashboard/Dashboard'
 import { Products } from '@/pages/products/Products'
 import { Finance } from '@/pages/finance/Finance'
+import { Sales } from '@/pages/sales/Sales'
+import { Customers } from '@/pages/customers/Customers'
+import { CheckoutBuilder } from '@/pages/checkout/CheckoutBuilder'
 import SettingsPage from '@/pages/settings'
 import { CheckoutPage } from '@/pages/public/CheckoutPage'
 import NotFoundPage from '@/pages/public/NotFoundPage'
@@ -33,7 +36,10 @@ export default function App() {
           <Route path="/" element={<AppLayout />}>
             <Route index element={<Navigate to="/dashboard" />} />
             <Route path="dashboard" element={<Dashboard />} />
+            <Route path="checkout-builder" element={<CheckoutBuilder />} />
             <Route path="products" element={<Products />} />
+            <Route path="sales" element={<Sales />} />
+            <Route path="customers" element={<Customers />} />
             <Route path="finance" element={<Finance />} />
             <Route path="settings" element={<SettingsPage />} />
             <Route path="settings/profile" element={<SettingsPage />} />
