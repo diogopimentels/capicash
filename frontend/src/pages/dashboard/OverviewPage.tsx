@@ -3,8 +3,8 @@ import { useAuth } from "@clerk/clerk-react"
 import { useQuery } from "@tanstack/react-query"
 import { api, setupAPIClient } from "@/lib/api"
 import { CinematicLoading } from '@/components/shared/CinematicLoading'
-import { DollarSign, ShoppingBag, TrendingUp, ArrowUpRight, ArrowDownRight } from "lucide-react"
-import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
+import { DollarSign, ShoppingBag, TrendingUp, ArrowUpRight } from "lucide-react"
+import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis } from "recharts"
 import { cn } from "@/lib/utils"
 
 export function OverviewPage() {

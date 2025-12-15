@@ -15,7 +15,7 @@ export const salesService = {
     async getSales() {
         const response = await axios.get<Transaction[]>(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/sales`, {
             headers: {
-                Authorization: `Bearer ${await window.Clerk?.session?.getToken()}`
+                Authorization: `Bearer ${await (window as any).Clerk?.session?.getToken()}`
             }
         })
         return response.data
