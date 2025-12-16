@@ -6,7 +6,7 @@ import { AppModule } from './app.module';
 import { LoggingInterceptor } from './shared/interceptors/logging.interceptor';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, { bodyParser: false });
 
   app.enableCors();
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));

@@ -1,7 +1,8 @@
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer, NestModule, RequestMethod } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import * as Joi from 'joi';
+import { json } from 'express'; // Importante: middleware do express/body-parser
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './shared/prisma/prisma.module';
@@ -22,7 +23,9 @@ import { SalesModule } from './modules/sales/sales.module';
       validationSchema: Joi.object({
         DATABASE_URL: Joi.string().required(),
         CLERK_SECRET_KEY: Joi.string().required(),
-        ABACATE_API_KEY: Joi.string().required(),
+        ABACATE_API_KEY: Joi.string().optional(),
+        STRIPE_SECRET_KEY: Joi.string().optional(),
+        STRIPE_WEBHOOK_SECRET: Joi.string().optional(),
         PORT: Joi.number().default(3000),
       }),
     }),
@@ -45,4 +48,16 @@ import { SalesModule } from './modules/sales/sales.module';
     },
   ],
 })
-export class AppModule { }
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(
+        json({
+          verify: (req: any, res, buf) => {
+            req.rawBody = buf;
+          },
+        }),
+      )
+      .forRoutes('*');
+  }
+}

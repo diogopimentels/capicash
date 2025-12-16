@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import axios from "axios"
-import { CheckCircle2, Loader2, Lock, Mail, Phone, FileText, Check, ShieldCheck, Zap, Image as ImageIcon, AlertCircle, User } from "lucide-react"
+import { CheckCircle2, Loader2, Lock, Mail, Phone, FileText, ShieldCheck, Zap, Image as ImageIcon, AlertCircle, User } from "lucide-react"
 import { useParams } from "react-router-dom"
 
 import { AuroraBackground } from "@/components/ui/aurora-background"
