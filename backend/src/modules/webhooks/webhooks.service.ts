@@ -1,6 +1,5 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../shared/prisma/prisma.service';
-import { AbacateWebhookDto } from './dto/abacate-webhook.dto';
 import Stripe from 'stripe';
 
 @Injectable()
@@ -26,17 +25,7 @@ export class WebhooksService {
     }
   }
 
-  async handleAbacateWebhook(payload: AbacateWebhookDto) {
-    this.logger.log(`Webhook recebido: ${payload.event} - ID: ${payload.data.id}`);
 
-    // Só nos interessa evento de pagamento aprovado
-    if (payload.event !== 'billing.paid') {
-      return { received: true, ignored: true };
-    }
-
-    const billingId = payload.data.id;
-    return this.processPaymentSuccess(billingId);
-  }
 
   async handleStripeWebhook(signature: string, rawBody: Buffer) {
     let event: Stripe.Event;

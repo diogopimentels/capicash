@@ -13,7 +13,6 @@ import { WebhooksModule } from './modules/webhooks/webhooks.module';
 import { WithdrawalsModule } from './modules/withdrawals/withdrawals.module';
 import { UploadsModule } from './modules/uploads/uploads.module';
 import { ClerkAuthGuard } from './modules/auth/clerk-auth.guard';
-import { AbacateModule } from './modules/abacate/abacate.module';
 import { SalesModule } from './modules/sales/sales.module';
 
 @Module({
@@ -36,7 +35,6 @@ import { SalesModule } from './modules/sales/sales.module';
     WebhooksModule,
     WithdrawalsModule,
     UploadsModule,
-    AbacateModule,
     SalesModule,
   ],
   controllers: [AppController],
