@@ -13,6 +13,29 @@ async function bootstrap() {
   const expressApp = app.getHttpAdapter().getInstance();
   expressApp.set('trust proxy', 1);
 
+  // SHORT-CIRCUIT: Responde OPTIONS imediatamente para evitar bloqueio do Clerk
+  app.use((req, res, next) => {
+    if (req.method === 'OPTIONS') {
+      const origin = req.headers.origin;
+      const allowedOrigins = [
+        'https://app.capicash.com.br',
+        'http://localhost:5173',
+        'http://localhost:3000',
+        process.env.FRONTEND_URL
+      ];
+
+      // Se a origem for permitida (ou se não tiver origem, ex: curl), libera
+      if (!origin || allowedOrigins.includes(origin)) {
+        res.header('Access-Control-Allow-Origin', origin || '*');
+        res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS');
+        res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept');
+        res.header('Access-Control-Allow-Credentials', 'true');
+        return res.status(204).end();
+      }
+    }
+    next();
+  });
+
   // Middleware CORS do Express (Roda antes dos Guards do NestJS)
   app.use(cors({
     origin: [
