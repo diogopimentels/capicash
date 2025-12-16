@@ -22,6 +22,7 @@ import {
 import { Plus, Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useAuth } from "@clerk/clerk-react"
 import { createProduct, api } from "@/lib/api"
 
 interface CreateLinkProps {
@@ -36,6 +37,7 @@ export function CreateLink({ children }: CreateLinkProps) {
     const [imageFile, setImageFile] = useState<File | null>(null)
     const [uploading, setUploading] = useState(false)
     const queryClient = useQueryClient()
+    const { getToken } = useAuth()
 
     const { mutate, isPending } = useMutation({
         mutationFn: createProduct,
@@ -74,11 +76,15 @@ export function CreateLink({ children }: CreateLinkProps) {
         if (imageFile) {
             setUploading(true)
             try {
+                const token = await getToken()
                 const formData = new FormData()
                 formData.append('file', imageFile)
 
                 const uploadRes = await api.post('/uploads/image', formData, {
-                    headers: { 'Content-Type': 'multipart/form-data' }
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        'Authorization': `Bearer ${token}`
+                    }
                 })
                 imageUrl = uploadRes.data.imageUrl
             } catch (error) {
