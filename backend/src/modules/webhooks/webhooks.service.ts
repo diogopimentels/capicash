@@ -9,10 +9,21 @@ export class WebhooksService {
   private stripe: Stripe;
 
   constructor(private readonly prisma: PrismaService) {
-    // Inicializa Stripe com a chave secreta e versão da API
-    this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-      apiVersion: '2025-02-24.acacia', // Use a versão mais recente ou a que preferir
-    });
+    const stripeKey = process.env.STRIPE_SECRET_KEY;
+
+    if (!stripeKey) {
+      this.logger.error("❌ FATAL: STRIPE_SECRET_KEY não encontrada no .env");
+      // Evita o crash total se a chave não estiver lá, mas o webhook não vai funcionar
+      // Se preferir o crash para alertar no deploy, descomente o throw.
+      // throw new Error("STRIPE_SECRET_KEY is missing");
+    }
+
+    // Inicializa Stripe com a chave (se existir)
+    if (stripeKey) {
+      this.stripe = new Stripe(stripeKey, {
+        apiVersion: '2025-02-24.acacia',
+      });
+    }
   }
 
   async handleAbacateWebhook(payload: AbacateWebhookDto) {
