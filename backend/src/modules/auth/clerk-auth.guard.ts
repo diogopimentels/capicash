@@ -6,7 +6,7 @@ import { IS_PUBLIC_KEY } from '../../shared/decorators/public.decorator';
 export class ClerkAuthGuard implements CanActivate {
     private readonly logger = new Logger(ClerkAuthGuard.name);
 
-    constructor(private reflector: Reflector) {}
+    constructor(private reflector: Reflector) { }
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
@@ -19,6 +19,12 @@ export class ClerkAuthGuard implements CanActivate {
         }
 
         const request = context.switchToHttp().getRequest();
+
+        // SOLUÇÃO CRÍTICA: Permitir Preflight de CORS sem token
+        if (request.method === 'OPTIONS') {
+            return true;
+        }
+
         const authHeader = request.headers.authorization;
 
         if (!authHeader) {
