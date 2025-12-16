@@ -10,6 +10,23 @@ async function bootstrap() {
 
   app.set('trust proxy', 1);
 
+  // FORCE BRUTE CORS MIDDLEWARE
+  app.use((req: any, res: any, next: any) => {
+    if (req.method === 'OPTIONS') {
+      const origin = req.headers.origin;
+      if (origin) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+      }
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
+      res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS');
+      res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+      // Envia 204 e para a requisição aqui, sem passar pelos guards
+      res.status(204).end();
+      return;
+    }
+    next();
+  });
+
   app.enableCors({
     origin: (origin, callback) => {
       const allowedOrigins = [
