@@ -38,7 +38,7 @@ export class UploadsController {
         }
 
         // Retorna a URL pública do arquivo
-        const imageUrl = `http://localhost:3000/uploads/${file.filename}`;
+        const imageUrl = `${process.env.API_URL || 'http://localhost:3000'}/uploads/${file.filename}`;
 
         return {
             success: true,

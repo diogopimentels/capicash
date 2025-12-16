@@ -39,13 +39,13 @@ export class CheckoutService {
                         price: product.priceCents, // Já está em centavos
                     },
                 ],
-                returnUrl: product.redirectUrl,
-                completionUrl: product.redirectUrl,
+                returnUrl: dto.returnUrl || product.redirectUrl,
+                completionUrl: dto.returnUrl || product.redirectUrl,
                 customer: dto.email ? {
                     email: dto.email,
-                    name: "Cliente Visitante",
+                    name: dto.name || "Cliente Visitante",
                     cellphone: cleanPhone || "11999999999",
-                    taxId: cleanTaxId || "70499164027" // CPF Gerado válido para passar na validação matemática
+                    taxId: cleanTaxId || "00000000000" // CPF deve ser válido para boleto/pix, mas abacate aceita as vezes. Melhor usar o do DTO.
                 } : undefined,
             });
 
@@ -61,12 +61,14 @@ export class CheckoutService {
                 },
             });
 
-            return {
+            const ret = {
                 sessionId: session.id,
-                pixCode: billing.pix?.code,
                 qrCodeUrl: billing.url,
                 amount: product.priceCents,
             };
+
+            console.log('🚀 RETORNANDO PARA O FRONT:', ret);
+            return ret;
         } catch (error) {
             console.error('Erro ao criar sessão de checkout:', error);
             // Logar o erro real para debug

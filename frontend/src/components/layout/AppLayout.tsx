@@ -24,7 +24,7 @@ export function AppLayout() {
             const syncUser = async () => {
                 try {
                     const token = await getToken()
-                    await fetch('http://localhost:3000/users/sync', {
+                    await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/users/sync`, {
                         method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${token}`,

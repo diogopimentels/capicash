@@ -22,7 +22,7 @@ import {
 import { Plus, Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { createProduct } from "@/lib/api"
+import { createProduct, api } from "@/lib/api"
 
 interface CreateLinkProps {
     children?: React.ReactNode
@@ -33,6 +33,8 @@ export function CreateLink({ children }: CreateLinkProps) {
     const [open, setOpen] = useState(false)
     const [title, setTitle] = useState("")
     const [price, setPrice] = useState("")
+    const [imageFile, setImageFile] = useState<File | null>(null)
+    const [uploading, setUploading] = useState(false)
     const queryClient = useQueryClient()
 
     const { mutate, isPending } = useMutation({
@@ -67,10 +69,31 @@ export function CreateLink({ children }: CreateLinkProps) {
         // Convert to cents
         const priceCents = Math.round(priceValue * 100)
 
+        // Upload Image if exists
+        let imageUrl = ""
+        if (imageFile) {
+            setUploading(true)
+            try {
+                const formData = new FormData()
+                formData.append('file', imageFile)
+
+                const uploadRes = await api.post('/uploads/image', formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                })
+                imageUrl = uploadRes.data.imageUrl
+            } catch (error) {
+                console.error("Upload failed", error)
+                toast.error("Falha ao enviar imagem. Continuando sem ela.")
+            } finally {
+                setUploading(false)
+            }
+        }
+
         mutate({
             title,
             priceCents,
-            redirectUrl: 'https://google.com', // Placeholder for now, maybe add input later
+            redirectUrl: 'https://google.com',
+            imageUrl: imageUrl || undefined,
         })
     }
 
@@ -102,7 +125,20 @@ export function CreateLink({ children }: CreateLinkProps) {
                     step="0.01"
                 />
             </div>
-            <Button type="submit" className="w-full h-12 text-base font-medium mt-2" disabled={isPending}>
+            <div className="grid gap-2">
+                <Label htmlFor="image" className="text-base">Imagem do Produto (Opcional)</Label>
+                <Input
+                    id="image"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                        const file = e.target.files?.[0]
+                        if (file) setImageFile(file)
+                    }}
+                    className="cursor-pointer"
+                />
+            </div>
+            <Button type="submit" className="w-full h-12 text-base font-medium mt-2" disabled={isPending || uploading}>
                 {isPending && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
                 Gerar Link de Pagamento
             </Button>

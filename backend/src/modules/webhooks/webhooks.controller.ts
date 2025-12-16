@@ -15,6 +15,8 @@ export class WebhooksController {
     @Body() payload: AbacateWebhookDto,
     @Headers('x-webhook-signature') signature?: string,
   ) {
+    console.log('🪝 WEBHOOK RECEIVED (RAW):', JSON.stringify(payload, null, 2));
+
     // Validar assinatura HMAC (se configurada)
     if (process.env.ABACATE_WEBHOOK_SECRET) {
       if (!signature) {

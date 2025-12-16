@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger, BadRequestException } from '@nestjs/common';
 import axios, { AxiosInstance } from 'axios';
 import { CreateBillingDto, AbacateBillingResponse } from './dto/create-billing.dto';
 
@@ -32,16 +32,20 @@ export class AbacateService {
   async createBilling(data: CreateBillingDto): Promise<AbacateBillingResponse['data']> {
     try {
       const response = await this.http.post<AbacateBillingResponse>('/billing/create', data);
-      
+
       this.logger.log(`Cobrança criada no Abacate Pay: ${response.data.data.id}`);
-      
+
       return response.data.data;
     } catch (error) {
       this.logger.error(
-        'Erro ao criar cobrança no Abacate Pay', 
+        'Erro ao criar cobrança no Abacate Pay',
         error.response?.data || error.message
       );
-      
+
+      if (error.response?.status === 400) {
+        throw new BadRequestException(error.response?.data?.message || 'Dados inválidos para o pagamento.');
+      }
+
       // Lança erro para ser capturado pelo Global Filter ou Controller
       throw new InternalServerErrorException(
         'Falha ao comunicar com gateway de pagamento.'
