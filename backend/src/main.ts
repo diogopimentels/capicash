@@ -4,52 +4,29 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 import { AppModule } from './app.module';
 import { LoggingInterceptor } from './shared/interceptors/logging.interceptor';
+import * as cors from 'cors';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, { bodyParser: false });
 
-  app.set('trust proxy', 1);
+  // Habilita o Trust Proxy para o Render/Cloudflare
+  const expressApp = app.getHttpAdapter().getInstance();
+  expressApp.set('trust proxy', 1);
 
-  // FORCE BRUTE CORS MIDDLEWARE
-  app.use((req: any, res: any, next: any) => {
-    if (req.method === 'OPTIONS') {
-      const origin = req.headers.origin;
-      if (origin) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
-      }
-      res.setHeader('Access-Control-Allow-Credentials', 'true');
-      res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS');
-      res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-      // Envia 204 e para a requisição aqui, sem passar pelos guards
-      res.status(204).end();
-      return;
-    }
-    next();
-  });
-
-  app.enableCors({
-    origin: (origin, callback) => {
-      const allowedOrigins = [
-        'https://app.capicash.com.br',
-        'http://localhost:5173',
-        'http://localhost:3000',
-        process.env.FRONTEND_URL,
-      ];
-
-      // !origin significa chamada do mesmo servidor ou server-to-server (sem header Origin)
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        console.log('🚫 Bloqueado pelo CORS:', origin);
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+  // Middleware CORS do Express (Roda antes dos Guards do NestJS)
+  app.use(cors({
+    origin: [
+      'https://app.capicash.com.br',
+      'http://localhost:5173',
+      'http://localhost:3000',
+      process.env.FRONTEND_URL
+    ].filter(Boolean) as string[], // Remove valores nulos/undefined e tipa
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
-    allowedHeaders: 'Content-Type, Authorization',
     preflightContinue: false,
-    optionsSuccessStatus: 204,
-  });
+    optionsSuccessStatus: 204
+  }));
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.useGlobalInterceptors(new LoggingInterceptor());
 
