@@ -2,11 +2,11 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request }
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { ClerkAuthGuard } from '../auth/clerk-auth.guard';
+import { CustomClerkAuthGuard } from '../../auth/custom-clerk-auth.guard';
 import { Public } from '../../shared/decorators/public.decorator';
 
 @Controller('products')
-@UseGuards(ClerkAuthGuard)
+@UseGuards(CustomClerkAuthGuard)
 export class ProductsController {
     constructor(private readonly productsService: ProductsService) { }
 
