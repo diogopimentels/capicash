@@ -12,7 +12,7 @@ import { CheckoutModule } from './modules/checkout/checkout.module';
 import { WebhooksModule } from './modules/webhooks/webhooks.module';
 import { WithdrawalsModule } from './modules/withdrawals/withdrawals.module';
 import { UploadsModule } from './modules/uploads/uploads.module';
-import { ClerkAuthGuard } from './modules/auth/clerk-auth.guard';
+import { CustomClerkAuthGuard } from './auth/custom-clerk-auth.guard';
 import { SalesModule } from './modules/sales/sales.module';
 
 @Module({
@@ -42,7 +42,7 @@ import { SalesModule } from './modules/sales/sales.module';
     AppService,
     {
       provide: APP_GUARD,
-      useClass: ClerkAuthGuard,
+      useClass: CustomClerkAuthGuard,
     },
   ],
 })
