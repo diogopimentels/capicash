@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, Options, Res } from '@nestjs/common';
+import type { Response } from 'express';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -9,6 +10,19 @@ import { Public } from '../../shared/decorators/public.decorator';
 @UseGuards(CustomClerkAuthGuard)
 export class ProductsController {
     constructor(private readonly productsService: ProductsService) { }
+
+    // Força o NestJS a reconhecer a rota OPTIONS e responder OK
+    @Options()
+    optionsHandler(@Res() res: Response) {
+        // Define os headers permissivos manualmente
+        res.header('Access-Control-Allow-Origin', process.env.FRONTEND_URL || '*');
+        res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS');
+        res.header('Access-Control-Allow-Headers', 'Content-Type, Accept, Authorization');
+        res.header('Access-Control-Allow-Credentials', 'true');
+
+        // Responde 204 No Content
+        return res.status(204).end();
+    }
 
     @Public()
     @Get('public/:idOrSlug')
