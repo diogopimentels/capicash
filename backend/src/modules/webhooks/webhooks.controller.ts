@@ -24,4 +24,12 @@ export class WebhooksController {
 
     return this.webhooksService.handleStripeWebhook(signature, rawBody);
   }
+
+  @Public()
+  @Post('clerk')
+  @HttpCode(HttpStatus.OK)
+  async handleClerk(@Body() body: any) {
+    console.log('🪝 CLERK WEBHOOK RECEIVED');
+    return this.webhooksService.handleClerkWebhook(body);
+  }
 }

@@ -115,4 +115,46 @@ export class WebhooksService {
     this.logger.log(`💰 Pagamento processado com sucesso para Sessão: ${session.id} via ${gatewayId.startsWith('cs_') ? 'Stripe' : 'Abacate'}`);
     return { received: true, processed: true };
   }
+
+  // --- CLERK WEBHOOK HANDLER ---
+  async handleClerkWebhook(payload: any) {
+    const eventType = payload.type;
+    this.logger.log(`📨 Clerk Event Received: ${eventType}`);
+
+    if (eventType === 'user.created' || eventType === 'user.updated') {
+      const userData = payload.data;
+
+      // Extrai o email primário
+      const primaryEmail = userData.email_addresses?.find(
+        (email: any) => email.id === userData.primary_email_address_id
+      )?.email_address || userData.email_addresses?.[0]?.email_address;
+
+      if (!primaryEmail) {
+        this.logger.warn(`⚠️ User ${userData.id} has no email address, skipping sync`);
+        return { received: true, skipped: true };
+      }
+
+      // Sincroniza o usuário no banco usando upsert
+      await this.prisma.user.upsert({
+        where: { id: userData.id },
+        update: {
+          email: primaryEmail,
+          name: `${userData.first_name || ''} ${userData.last_name || ''}`.trim() || null,
+          avatarUrl: userData.image_url || null,
+        },
+        create: {
+          id: userData.id,
+          email: primaryEmail,
+          name: `${userData.first_name || ''} ${userData.last_name || ''}`.trim() || null,
+          avatarUrl: userData.image_url || null,
+        },
+      });
+
+      this.logger.log(`✅ User ${userData.id} synced successfully`);
+      return { received: true, synced: true };
+    }
+
+    // Outros eventos são apenas acknowledged
+    return { received: true };
+  }
 }
