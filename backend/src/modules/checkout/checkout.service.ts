@@ -1,13 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../shared/prisma/prisma.service';
-import { AbacateService } from '../abacate/abacate.service';
 import { CreateCheckoutDto } from './dto/create-checkout.dto';
 
 @Injectable()
 export class CheckoutService {
     constructor(
         private readonly prisma: PrismaService,
-        private readonly abacateService: AbacateService,
+        // TODO: Add proper payment service (Stripe/Abacate) here
     ) { }
 
     async createSession(dto: CreateCheckoutDto) {
@@ -27,7 +26,12 @@ export class CheckoutService {
             const cleanPhone = clean(dto.phone);
             const cleanTaxId = clean(dto.taxId);
 
-            // 2. Criar cobrança no Abacate Pay
+            // 2. TEMPORARILY DISABLED: Payment gateway integration needed
+            // TODO: Re-enable when proper payment service is configured
+            throw new Error('Payment gateway not configured. Please contact support.');
+
+            /*
+            // Original Abacate Pay integration code:
             const billing = await this.abacateService.createBilling({
                 frequency: 'ONE_TIME',
                 methods: ['PIX'],
@@ -36,7 +40,7 @@ export class CheckoutService {
                         externalId: product.id,
                         name: product.title,
                         quantity: 1,
-                        price: product.priceCents, // Já está em centavos
+                        price: product.priceCents,
                     },
                 ],
                 returnUrl: dto.returnUrl || product.redirectUrl,
@@ -45,11 +49,13 @@ export class CheckoutService {
                     email: dto.email,
                     name: dto.name || "Cliente Visitante",
                     cellphone: cleanPhone || "11999999999",
-                    taxId: cleanTaxId || "00000000000" // CPF deve ser válido para boleto/pix, mas abacate aceita as vezes. Melhor usar o do DTO.
+                    taxId: cleanTaxId || "00000000000"
                 } : undefined,
             });
+            */
 
-            // 3. Salvar sessão no banco
+            /*
+            // 3. Salvar sessão no banco (disabled until payment gateway is configured)
             const session = await this.prisma.checkoutSession.create({
                 data: {
                     status: 'PENDING',
@@ -69,6 +75,7 @@ export class CheckoutService {
 
             console.log('🚀 RETORNANDO PARA O FRONT:', ret);
             return ret;
+            */
         } catch (error) {
             console.error('Erro ao criar sessão de checkout:', error);
             // Logar o erro real para debug
