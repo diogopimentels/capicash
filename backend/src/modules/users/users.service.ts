@@ -6,7 +6,8 @@ export class UsersService {
     constructor(private readonly prisma: PrismaService) { }
 
     async syncUser(data: { id: string; email: string; name?: string; avatarUrl?: string }) {
-        return this.prisma.user.upsert({
+        console.log("🔄 [FLOW: APP_ACCESS] Service Syncing User:", JSON.stringify(data, null, 2));
+        const result = await this.prisma.user.upsert({
             where: { id: data.id },
             update: {
                 email: data.email,
@@ -20,6 +21,15 @@ export class UsersService {
                 avatarUrl: data.avatarUrl,
             },
         });
+
+        console.log("💾 [FLOW: APP_ACCESS] User Persisted in DB:", JSON.stringify({
+            userId: data.id,
+            email: data.email,
+            action: "UPSERT",
+            timestamp: new Date().toISOString()
+        }, null, 2));
+
+        return result;
     }
 
     async findOne(id: string) {

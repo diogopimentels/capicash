@@ -16,7 +16,12 @@ export class UsersController {
 
     @Post('sync')
     async sync(@Body() body: { id: string; email: string; name?: string; avatarUrl?: string }) {
-        this.logger.log(`Syncing user: ${body.email} (${body.id})`);
+        console.log("⚡ [FLOW: APP_ACCESS] Backend Sync Request Received:", JSON.stringify({
+            userId: body.id,
+            email: body.email,
+            timestamp: new Date().toISOString()
+        }, null, 2));
+
         return this.usersService.syncUser(body);
     }
 

@@ -9,6 +9,11 @@ export class CheckoutController {
 
   @Post()
   async createCheckout(@Body() createCheckoutDto: CreateCheckoutDto) {
+    console.log("💳 [FLOW: PAYMENT_GATEWAY] Checkout Request Received:", JSON.stringify({
+      body: createCheckoutDto,
+      timestamp: new Date().toISOString()
+    }, null, 2));
+
     return this.checkoutService.createStripeSession(
       createCheckoutDto.productId,
       // Passar o ID do usuário se estiver autenticado, ou gerenciar no service

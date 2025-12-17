@@ -30,10 +30,16 @@ export function Login() {
             })
 
             if (result.status === "complete") {
+                console.log("✅ [FLOW: LOGIN] Success:", JSON.stringify({
+                    step: "LOGIN_COMPLETE",
+                    sessionId: result.createdSessionId,
+                    email: email,
+                    timestamp: new Date().toISOString()
+                }, null, 2))
                 await setActive({ session: result.createdSessionId })
                 navigate("/dashboard")
             } else {
-                console.log(result)
+                console.log("❌ [FLOW: LOGIN] Failed/Incomplete:", JSON.stringify(result, null, 2))
                 setError("Erro no login. Verifique suas credenciais.")
             }
         } catch (err: any) {

@@ -17,6 +17,8 @@ export class CheckoutService {
     }
 
     async createStripeSession(productId: string, userId?: string) {
+        console.log("🏗️ [FLOW: LINK_ISSUE/GATEWAY] Creating Stripe Session for:", JSON.stringify({ productId, userId }, null, 2));
+
         const product = await this.prisma.product.findUnique({
             where: { id: productId },
         });
@@ -52,6 +54,12 @@ export class CheckoutService {
                     userId: userId || '',
                 },
             });
+
+            console.log("✅ [FLOW: PAYMENT_GATEWAY] Session Created:", JSON.stringify({
+                url: session.url,
+                id: session.id,
+                timestamp: new Date().toISOString()
+            }, null, 2));
 
             // Salvar intenção de checkout (opcional mas recomendado)
             // await this.prisma.checkoutSession.create({ ... })
