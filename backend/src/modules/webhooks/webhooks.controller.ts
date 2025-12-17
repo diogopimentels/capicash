@@ -14,13 +14,10 @@ export class WebhooksController {
       throw new UnauthorizedException('Stripe signature missing');
     }
 
-    // O rawBody foi injetado pelo middleware no AppModule
     const rawBody = req.rawBody;
     if (!rawBody) {
       throw new UnauthorizedException('Raw body missing for Stripe signature verification');
     }
-
-    console.log('🪝 STRIPE WEBHOOK RECEIVED');
 
     return this.webhooksService.handleStripeWebhook(signature, rawBody);
   }
@@ -29,7 +26,6 @@ export class WebhooksController {
   @Post('clerk')
   @HttpCode(HttpStatus.OK)
   async handleClerk(@Body() body: any) {
-    console.log('🪝 CLERK WEBHOOK RECEIVED');
     return this.webhooksService.handleClerkWebhook(body);
   }
 }

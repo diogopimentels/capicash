@@ -1,11 +1,11 @@
-import { Module, MiddlewareConsumer, NestModule, RequestMethod } from '@nestjs/common';
+import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import * as Joi from 'joi';
-import { json } from 'express'; // Importante: middleware do express/body-parser
+import { json } from 'express';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { PrismaModule } from './shared/prisma/prisma.module';
+import { PrismaModule } from './shared/prisma/prisma.module'; // Verifique se este caminho está correto
 import { UsersModule } from './modules/users/users.module';
 import { ProductsModule } from './modules/products/products.module';
 import { CheckoutModule } from './modules/checkout/checkout.module';

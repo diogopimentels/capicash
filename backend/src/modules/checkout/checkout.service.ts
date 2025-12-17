@@ -1,102 +1,65 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../../shared/prisma/prisma.service';
-import { CreateCheckoutDto } from './dto/create-checkout.dto';
+import { Injectable, NotFoundException, InternalServerErrorException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { PrismaService } from '../../shared/prisma/prisma.service'; // Ajuste o caminho conforme sua estrutura
+import Stripe from 'stripe';
 
 @Injectable()
 export class CheckoutService {
+    private stripe: Stripe;
+
     constructor(
-        private readonly prisma: PrismaService,
-        // TODO: Add proper payment service (Stripe/Abacate) here
-    ) { }
+        private prisma: PrismaService,
+        private configService: ConfigService,
+    ) {
+        this.stripe = new Stripe(this.configService.get<string>('STRIPE_SECRET_KEY') ?? '', {
+            apiVersion: '2025-02-24.acacia', // Use a versão mais recente ou compatível
+        });
+    }
 
-    async createSession(dto: CreateCheckoutDto) {
+    async createStripeSession(productId: string, userId?: string) {
+        const product = await this.prisma.product.findUnique({
+            where: { id: productId },
+        });
+
+        if (!product) {
+            throw new NotFoundException('Produto não encontrado');
+        }
+
+        const frontendUrl = this.configService.get<string>('FRONTEND_URL');
+
         try {
-            // 1. Buscar o produto
-            const product = await this.prisma.product.findUnique({
-                where: { id: dto.productId },
-            });
-
-            if (!product) {
-                throw new NotFoundException('Produto não encontrado.');
-            }
-
-            // Helper para limpar caracteres não numéricos
-            const clean = (val: string | undefined) => val?.replace(/\D/g, '');
-
-            const cleanPhone = clean(dto.phone);
-            const cleanTaxId = clean(dto.taxId);
-
-            // 2. TEMPORARILY DISABLED: Payment gateway integration needed
-            // TODO: Re-enable when proper payment service is configured
-            throw new Error('Payment gateway not configured. Please contact support.');
-
-            /*
-            // Original Abacate Pay integration code:
-            const billing = await this.abacateService.createBilling({
-                frequency: 'ONE_TIME',
-                methods: ['PIX'],
-                products: [
+            const session = await this.stripe.checkout.sessions.create({
+                payment_method_types: ['card'],
+                line_items: [
                     {
-                        externalId: product.id,
-                        name: product.title,
+                        price_data: {
+                            currency: 'brl',
+                            product_data: {
+                                name: product.title,
+                                description: product.description ?? undefined,
+                                // images: [product.imageUrl], // Se tiver imagem
+                            },
+                            unit_amount: product.priceCents, // Já está em centavos
+                        },
                         quantity: 1,
-                        price: product.priceCents,
                     },
                 ],
-                returnUrl: dto.returnUrl || product.redirectUrl,
-                completionUrl: dto.returnUrl || product.redirectUrl,
-                customer: dto.email ? {
-                    email: dto.email,
-                    name: dto.name || "Cliente Visitante",
-                    cellphone: cleanPhone || "11999999999",
-                    taxId: cleanTaxId || "00000000000"
-                } : undefined,
-            });
-            */
-
-            /*
-            // 3. Salvar sessão no banco (disabled until payment gateway is configured)
-            const session = await this.prisma.checkoutSession.create({
-                data: {
-                    status: 'PENDING',
-                    gatewayId: billing.id,
-                    pixCode: billing.pix?.code,
-                    pixQrCode: billing.pix?.qrCode,
-                    amountCents: product.priceCents,
+                mode: 'payment',
+                success_url: `${frontendUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+                cancel_url: `${frontendUrl}/checkout/cancel`,
+                metadata: {
                     productId: product.id,
+                    userId: userId || '',
                 },
             });
 
-            const ret = {
-                sessionId: session.id,
-                qrCodeUrl: billing.url,
-                amount: product.priceCents,
-            };
+            // Salvar intenção de checkout (opcional mas recomendado)
+            // await this.prisma.checkoutSession.create({ ... })
 
-            console.log('🚀 RETORNANDO PARA O FRONT:', ret);
-            return ret;
-            */
+            return { url: session.url };
         } catch (error) {
-            console.error('Erro ao criar sessão de checkout:', error);
-            // Logar o erro real para debug
-            if (error.response) {
-                console.error('Detalhe do erro Abacate:', error.response.data);
-            }
-            throw error; // Repassa o erro para o Nest tratar (500)
+            console.error('Erro ao criar sessão do Stripe:', error);
+            throw new InternalServerErrorException('Erro ao criar checkout');
         }
-    }
-
-    // --- NOVO MÉTODO PARA POLLING (Status Check) ---
-    async getSessionStatus(sessionId: string) {
-        const session = await this.prisma.checkoutSession.findUnique({
-            where: { id: sessionId },
-            select: { status: true, amountCents: true, productId: true }, // Só precisamos saber o status
-        });
-
-        if (!session) {
-            throw new NotFoundException('Sessão não encontrada');
-        }
-
-        return session;
     }
 }
