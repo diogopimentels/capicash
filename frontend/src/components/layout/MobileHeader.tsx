@@ -2,6 +2,7 @@ import { Bell } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { Logo } from "@/components/shared/Logo"
 import { useUser } from "@clerk/clerk-react"
+import { UserNav } from "../dashboard/user-nav"
 
 export function MobileHeader() {
     const navigate = useNavigate()
@@ -25,21 +26,8 @@ export function MobileHeader() {
                     <span className="absolute top-2.5 right-2.5 h-2 w-2 rounded-full bg-red-500 ring-2 ring-black" />
                 </button>
 
-                {/* User Avatar */}
-                <button
-                    onClick={() => navigate('/settings')}
-                    className="relative h-8 w-8 overflow-hidden rounded-full ring-2 ring-white/10 active:scale-95 transition-transform"
-                >
-                    {user?.imageUrl ? (
-                        <img
-                            src={user.imageUrl}
-                            alt="User"
-                            className="h-full w-full object-cover"
-                        />
-                    ) : (
-                        <div className="h-full w-full bg-emerald-500" />
-                    )}
-                </button>
+                {/* User Avatar Menu */}
+                <UserNav />
             </div>
         </header>
     )

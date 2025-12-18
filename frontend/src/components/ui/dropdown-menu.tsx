@@ -8,6 +8,15 @@ const DropdownMenu = PopoverPrimitive.Root
 const DropdownMenuTrigger = PopoverPrimitive.Trigger
 const DropdownMenuPortal = PopoverPrimitive.Portal
 
+const DropdownMenuGroup = React.forwardRef<
+    HTMLDivElement,
+    React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+    <div ref={ref} className={className} {...props} />
+))
+DropdownMenuGroup.displayName = "DropdownMenuGroup"
+
+
 const DropdownMenuContent = React.forwardRef<
     React.ElementRef<typeof PopoverPrimitive.Content>,
     React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Content>
@@ -78,4 +87,5 @@ export {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuPortal,
+    DropdownMenuGroup,
 }
