@@ -1,28 +1,32 @@
-# Build Stage
+# Estágio de Build
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copiar apenas os arquivos de projeto/solução primeiro (para cachear o Restore)
-COPY ["Capicash.sln", "./"]
-COPY ["Capicash.API/Capicash.API.csproj", "Capicash.API/"]
+# 1. Copiar o .csproj com o caminho CORRETO (adicionando backend/)
+# A sintaxe é: COPY ["caminho/no/repo", "caminho/no/container"]
+COPY ["backend/Capicash.API/Capicash.API.csproj", "backend/Capicash.API/"]
 
-# Restaurar dependências
-RUN dotnet restore "Capicash.sln"
+# 2. Restaurar dependências
+RUN dotnet restore "backend/Capicash.API/Capicash.API.csproj"
 
-# Copiar todo o código fonte
+# 3. Copiar todo o resto do projeto
 COPY . .
 
-# Build e Publish
-WORKDIR "/src/Capicash.API"
+# 4. Mudar para a pasta do projeto para fazer o build
+WORKDIR "/src/backend/Capicash.API"
+RUN dotnet build "Capicash.API.csproj" -c Release -o /app/build
+
+# 5. Publicar
+FROM build AS publish
 RUN dotnet publish "Capicash.API.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
-# Runtime Stage
+# Estágio Final (Runtime)
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
-COPY --from=build /app/publish .
+COPY --from=publish /app/publish .
 
-# Expor porta (Render usa a variável PORT, mas por padrão aspnet core ouve na 8080 no .NET 8)
-ENV ASPNETCORE_URLS=http://+:8080
+# Configuração de Porta
+ENV ASPNETCORE_HTTP_PORTS=8080
 EXPOSE 8080
 
 ENTRYPOINT ["dotnet", "Capicash.API.dll"]
