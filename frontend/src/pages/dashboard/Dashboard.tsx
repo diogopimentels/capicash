@@ -1,34 +1,40 @@
-import { DollarSign, CreditCard, Activity, Link as LinkIcon } from "lucide-react"
+import { DollarSign, Wallet, ArrowUpRight, ArrowDownRight, QrCode, Activity, Link as LinkIcon } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { useQuery } from "@tanstack/react-query";
+import { api, setupAPIClient } from "@/lib/api";
+import { useEffect } from "react"
+import { CapicashLoader } from "@/components/shared/CapicashLoader"
+import { useUserSync } from "@/hooks/use-user-sync"
+import { useAuth } from "@clerk/clerk-react"
 import { KPICard } from "@/components/shared/KPICard"
 import { SalesChart } from "@/components/dashboard/SalesChart"
 import { RecentSales } from "@/components/dashboard/RecentSales"
-import { useAuth } from "@clerk/clerk-react"
-import { useQuery } from "@tanstack/react-query"
-import { api, setupAPIClient } from "@/lib/api"
-import { useEffect } from "react"
-import { CapicashLoader } from "@/components/shared/CapicashLoader"
 
 export function Dashboard() {
     const { getToken, isLoaded } = useAuth()
 
-    // Configura o Axios com o token atual
+    // 🔥 HOOK DE RECUPERAÇÃO DE CONTA (Auto-Sync)
+    useUserSync();
+
+    // Configura o Axios
     useEffect(() => {
         if (isLoaded) {
             setupAPIClient(getToken)
         }
     }, [isLoaded, getToken])
 
-    // Busca os dados
     const { data, isLoading } = useQuery({
         queryKey: ['metrics'],
         queryFn: async () => {
             const response = await api.get('/users/me/metrics')
             return response.data
         },
-        enabled: isLoaded, // Só roda se o Clerk carregou
+        enabled: isLoaded,
+        retry: 1, // Tenta mais uma vez se falhar antes de desistir
     })
 
-    // Função para formatar dinheiro
     const formatMoney = (cents: number) => {
         return new Intl.NumberFormat('pt-BR', {
             style: 'currency',
@@ -36,11 +42,16 @@ export function Dashboard() {
         }).format(cents / 100)
     }
 
+    /* 
+       Não bloqueamos mais a UI com "Syncing..." 
+       Deixamos o Skeleton/Loader padrão rodar enquanto o useUserSync + useQuery resolvem.
+    */
+
     if (isLoading) {
         return <div className="flex h-[50vh] items-center justify-center"><CapicashLoader /></div>
     }
 
-    // Dados reais ou Zero (se falhar/novo)
+    // Default safe metrics
     const metrics = data || {
         availableBalance: 0,
         totalRevenue: 0,
@@ -52,35 +63,12 @@ export function Dashboard() {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between space-y-2">
-                <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-            </div>
-
+            <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <KPICard
-                    title="Saldo Disponível"
-                    value={formatMoney(metrics.availableBalance)}
-                    icon={DollarSign}
-                    description="Saldo atual"
-                />
-                <KPICard
-                    title="Vendas Hoje"
-                    value={formatMoney(0)}
-                    icon={CreditCard}
-                    description="0 vendas"
-                />
-                <KPICard
-                    title="Total Recebido"
-                    value={formatMoney(metrics.totalRevenue)}
-                    icon={Activity}
-                    description="Desde o início"
-                />
-                <KPICard
-                    title="Links Ativos"
-                    value={metrics.activeLinks.toString()}
-                    icon={LinkIcon}
-                    description="Produtos ativos"
-                />
+                <KPICard title="Saldo Disponível" value={formatMoney(metrics.availableBalance)} icon={DollarSign} description="Saldo atual" />
+                <KPICard title="Total Recebido" value={formatMoney(metrics.totalRevenue)} icon={Activity} description="Desde o início" />
+                <KPICard title="Links Ativos" value={metrics.activeLinks.toString()} icon={LinkIcon} description="Produtos ativos" />
+                <KPICard title="Vendas Realizadas" value={metrics.salesCount?.toString() || "0"} icon={Wallet} description="Vendas aprovadas" />
             </div>
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
@@ -94,4 +82,3 @@ export function Dashboard() {
         </div>
     )
 }
-

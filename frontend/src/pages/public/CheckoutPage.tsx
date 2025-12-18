@@ -56,6 +56,16 @@ export function CheckoutPage() {
         fetchProduct()
     }, [slug])
 
+    // State for PIX Data
+    const [pixData, setPixData] = useState<{ payload: string; image: string } | null>(null);
+
+    const handleCopyPix = () => {
+        if (pixData?.payload) {
+            navigator.clipboard.writeText(pixData.payload);
+            alert("Código PIX copiado!");
+        }
+    }
+
     const handleGeneratePix = async () => {
         if (!email || !product) return;
 
@@ -83,17 +93,23 @@ export function CheckoutPage() {
 
             console.log('✅ DADOS RECEBIDOS:', response.data);
 
-            const checkoutUrl = response.data.qrCodeUrl || response.data.url;
+            const { pixPayload, pixImage } = response.data;
 
-            if (checkoutUrl) {
-                setRedirecting(true);
-                // Pequeno delay para UX
-                setTimeout(() => {
-                    window.location.href = checkoutUrl;
-                }, 1000);
-            } else {
-                alert("Erro: Link de pagamento não recebido.");
+            if (pixPayload && pixImage) {
+                setPixData({ payload: pixPayload, image: pixImage });
                 setLoading(false);
+            } else {
+                // Fallback para redirect antigo (se houver)
+                const checkoutUrl = response.data.qrCodeUrl || response.data.url;
+                if (checkoutUrl) {
+                    setRedirecting(true);
+                    setTimeout(() => {
+                        window.location.href = checkoutUrl;
+                    }, 1000);
+                } else {
+                    alert("Erro: Dados de pagamento incompletos.");
+                    setLoading(false);
+                }
             }
 
         } catch (error: any) {
@@ -130,6 +146,54 @@ export function CheckoutPage() {
         )
     }
 
+    // SUCCESS STATE (QR CODE DISPLAY)
+    if (pixData) {
+        return (
+            <div className="min-h-screen w-full relative flex items-center justify-center p-6 text-center">
+                <AuroraBackground className="fixed inset-0" />
+                <div className="relative z-10 w-full max-w-md bg-white/10 backdrop-blur-3xl p-8 rounded-3xl border border-white/10 shadow-2xl flex flex-col items-center animate-in fade-in zoom-in duration-500">
+                    <div className="bg-emerald-500 p-4 rounded-full mb-6 shadow-lg shadow-emerald-500/30">
+                        <CheckCircle2 className="w-10 h-10 text-white" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-white mb-2">Pedido Criado!</h2>
+                    <p className="text-zinc-300 mb-6 text-sm">Escaneie o QR Code abaixo ou copie o código para pagar.</p>
+
+                    <div className="bg-white p-4 rounded-xl mb-6 shadow-inner">
+                        <img src={`data:image/jpeg;base64,${pixData.image}`} alt="QR Code PIX" className="w-64 h-64 object-contain mix-blend-multiply" />
+                    </div>
+
+                    <div className="w-full space-y-3">
+                        <div className="relative">
+                            <Input
+                                readOnly
+                                value={pixData.payload}
+                                className="pr-12 bg-black/20 border-white/10 text-zinc-300 text-xs truncate h-12"
+                            />
+                            <Button
+                                size="sm"
+                                variant="ghost"
+                                className="absolute right-1 top-1 bottom-1 hover:bg-white/10"
+                                onClick={handleCopyPix}
+                            >
+                                Copiar
+                            </Button>
+                        </div>
+                        <Button
+                            className="w-full bg-emerald-500 hover:bg-emerald-600 text-white h-12 font-bold shadow-lg shadow-emerald-500/20"
+                            onClick={handleCopyPix}
+                        >
+                            Copiar Código Pix
+                        </Button>
+                    </div>
+
+                    <p className="mt-6 text-xs text-zinc-500">
+                        Após o pagamento, você receberá o acesso no seu e-mail: <strong>{email}</strong>
+                    </p>
+                </div>
+            </div>
+        )
+    }
+
     return (
         <div className="min-h-screen w-full relative">
             <AuroraBackground className="fixed inset-0" />
@@ -155,10 +219,10 @@ export function CheckoutPage() {
                                 <h1 className="text-3xl font-bold text-zinc-900 dark:text-white mb-2">{product.title}</h1>
                                 <div className="flex items-center gap-3 mb-4">
                                     <Avatar className="h-8 w-8 border-2 border-white dark:border-zinc-800 shadow-sm">
-                                        <AvatarImage src={product.user.avatarUrl} />
-                                        <AvatarFallback>JF</AvatarFallback>
+                                        <AvatarImage src={product.user?.avatarUrl} />
+                                        <AvatarFallback>{product.user?.name?.substring(0, 2) || "VD"}</AvatarFallback>
                                     </Avatar>
-                                    <span className="text-sm font-medium text-zinc-600 dark:text-zinc-300">Por {product.user.name}</span>
+                                    <span className="text-sm font-medium text-zinc-600 dark:text-zinc-300">Por {product.user?.name || "Vendedor"}</span>
                                     {true && <Badge variant="secondary" className="text-xs bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800">Verificado</Badge>}
                                 </div>
                                 <p className="text-zinc-500 dark:text-zinc-400 leading-relaxed text-sm">{product.description}</p>

@@ -24,7 +24,7 @@ export function ThemeProvider({
     storageKey?: string
 }) {
     const [theme, setTheme] = useState<Theme>(
-        () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
+        () => "dark" // FORCE DARK MODE for MVP
     )
 
     useEffect(() => {

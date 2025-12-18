@@ -19,43 +19,47 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 const queryClient = new QueryClient()
 
+import { ThemeProvider } from "@/components/theme-provider"
+
 export default function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <AuroraBackground />
-        <Routes>
-          {/* Auth Routes */}
-          <Route path="/auth" element={<AuthLayout />}>
-            <Route path="login" element={<Login />} />
-            <Route path="register" element={<Register />} />
-            <Route index element={<Navigate to="/auth/login" />} />
-          </Route>
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <AuroraBackground />
+          <Routes>
+            {/* Auth Routes */}
+            <Route path="/auth" element={<AuthLayout />}>
+              <Route path="login" element={<Login />} />
+              <Route path="register" element={<Register />} />
+              <Route index element={<Navigate to="/auth/login" />} />
+            </Route>
 
-          {/* Protected App Routes */}
-          <Route path="/" element={<AppLayout />}>
-            <Route index element={<Navigate to="/dashboard" />} />
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="checkout-builder" element={<CheckoutBuilder />} />
-            <Route path="products" element={<Products />} />
-            <Route path="sales" element={<Sales />} />
-            <Route path="customers" element={<Customers />} />
-            <Route path="finance" element={<Finance />} />
-            <Route path="settings" element={<SettingsPage />} />
-            <Route path="settings/profile" element={<SettingsPage />} />
-          </Route>
+            {/* Protected App Routes */}
+            <Route path="/" element={<AppLayout />}>
+              <Route index element={<Navigate to="/dashboard" />} />
+              <Route path="dashboard" element={<Dashboard />} />
+              <Route path="checkout-builder" element={<CheckoutBuilder />} />
+              <Route path="products" element={<Products />} />
+              <Route path="sales" element={<Sales />} />
+              <Route path="customers" element={<Customers />} />
+              <Route path="finance" element={<Finance />} />
+              <Route path="settings" element={<SettingsPage />} />
+              <Route path="settings/profile" element={<SettingsPage />} />
+            </Route>
 
-          {/* Public Checkout Routes */}
-          {/* Option A: Root wildcard (catch-all for slugs) */}
-          <Route path="/:slug" element={<CheckoutPage />} />
+            {/* Public Checkout Routes */}
+            {/* Option A: Root wildcard (catch-all for slugs) */}
+            <Route path="/:slug" element={<CheckoutPage />} />
 
-          {/* Option B: Explicit prefix (safer) */}
-          <Route path="/p/:slug" element={<CheckoutPage />} />
+            {/* Option B: Explicit prefix (safer) */}
+            <Route path="/p/:slug" element={<CheckoutPage />} />
 
-          {/* 404 Fallback - MUST be last */}
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-      </BrowserRouter>
-    </QueryClientProvider>
+            {/* 404 Fallback - MUST be last */}
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </BrowserRouter>
+      </QueryClientProvider>
+    </ThemeProvider>
   )
 }

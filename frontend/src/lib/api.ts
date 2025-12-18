@@ -37,9 +37,8 @@ export interface WithdrawalHistory {
     pendingAmount: number;
 }
 
-// URL do Backend
 export const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000',
+    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5147',
 });
 
 // Interceptor para injetar o Token

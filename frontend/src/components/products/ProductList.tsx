@@ -43,7 +43,7 @@ export function ProductList({ products }: ProductListProps) {
                             <div className="flex-1 min-w-0">
                                 <h4 className="font-semibold text-base truncate">{product.title}</h4>
                                 <p className="text-sm text-muted-foreground">
-                                    R$ {(product.priceCents / 100).toFixed(2)}
+                                    R$ {((product.priceCents || 0) / 100).toFixed(2)}
                                 </p>
                             </div>
                             <div className="flex flex-col items-end gap-1">
@@ -87,7 +87,7 @@ export function ProductList({ products }: ProductListProps) {
                                     {product.title}
                                 </div>
                             </TableCell>
-                            <TableCell>R$ {(product.priceCents / 100).toFixed(2)}</TableCell>
+                            <TableCell>R$ {((product.priceCents || 0) / 100).toFixed(2)}</TableCell>
                             <TableCell>{product.sales || 0}</TableCell>
                             <TableCell className="text-emerald-600 font-medium">
                                 R$ {(product.revenue || 0).toFixed(2)}
